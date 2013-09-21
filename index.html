@@ -1,0 +1,83 @@
+<head>
+<script src="/socket.io/socket.io.js"></script>
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src='http://code.jquery.com/jquery-latest.min.js' type='text/javascript'></script>
+<script type='text/javascript'>
+  var socket = io.connect('ws://localhost');
+
+  socket.on('news', function (data) {
+    s=$('#x').html();
+    s=s+"<br>"+data;
+    $('#x').html(s);
+  });
+
+  $(function(){
+    //alert(3);
+    //var paper = Raphael(10, 50, 320, 200);
+    //var circle = paper.circle(50, 40, 10);
+
+    //var paper=new Raphael('canvas',1050,500);    
+    //circle=paper.circle(50,40,10);
+    //circle.attr('fill','#f00');
+  });
+
+  hosts=[];
+  
+  socket.on('pingResult',function(data) {
+    circle=paper.circle(50,40,10);
+    circle.attr('fill','#f00');
+  });	
+
+  function xx(){
+    socket.emit('cpu','3');
+  }
+
+  function start(){
+    socket.emit('pingLoop','start');
+  }
+
+  function stop(){
+    socket.emit('pingLoop','stop');
+  }
+
+  function yy() {
+    socket.emit('my other event','qwe');
+  }
+
+  function remove_hosts() {
+    socket.emit('remove_hosts','');
+  }
+
+  function add_host() {
+    var sHost=document.getElementById('host').value;
+    $('#x').html('');
+    socket.emit('add_host',sHost);
+  }
+</script>
+</head>
+<body>
+
+  <svg id='svg' xmlns="http://www.w3.org/2000/svg" version="1.1" width=600 height=300>
+    <g id="viewport">
+    </g>
+  </svg>
+
+<br>
+<button id=xx onclick='xx()'>CPU</button>
+<button id=yy onclick='yy()'>TIME</button>
+
+<br>
+<input type='text' id='host' value='localhost'></input>
+<button onclick='add_host()'>append the host</button>
+<button onclick='remove_hosts()'>remove_hosts</button>
+<button onclick="$('#x').html('');">clear contents</button>
+
+<br>
+<button id=yy onclick='start()'>start</button>
+<button id=yy onclick='stop()'>stop</button>
+
+<div id=x>this s x</div>
+<div id=y>send s y</div>
+<div id=z>section z</div>
+
+</body>

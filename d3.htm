@@ -1,0 +1,200 @@
+<head>
+  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script src='http://codeorigin.jquery.com/jquery-2.0.3.min.js'></script>
+  <xscript src='./jquery-svgpan.js'></script>
+  <script src='http://talos.github.com/jquery-svgpan/jquery-svgpan.js'></script>
+  <style>
+    svg {
+      border: 1px solid #aaa;
+      overflow: hidden; /* Thanks IE9! */
+    }
+  </style>
+
+  <script type='text/javascript'>
+
+$(document).ready(function() {
+  var w = 960,
+     h = 500;
+ 
+ var vertices = d3.range(100).map(function(d) {
+   return [Math.random() * w, Math.random() * h];
+ });
+ 
+ var svg = d3.select("#chart")
+   .append("svg")
+     .attr("width", w)
+     .attr("height", h)
+     .attr("class", "PiYG")
+     .on("mousemove", update);
+
+// This was added to the example
+ var g = svg.append('g')
+     .attr('id', 'viewport');
+ 
+ g.selectAll("path")
+     .data(d3.geom.voronoi(vertices))
+   .enter().append("path")
+     .attr("class", function(d, i) { return i ? "q" + (i % 9) + "-9" : null; })
+     .attr("d", function(d) { return "M" + d.join("L") + "Z"; });
+ 
+ g.selectAll("circle")
+     .data(vertices.slice(1))
+   .enter().append("circle")
+     .attr("transform", function(d) { return "translate(" + d + ")"; })
+     .attr("r", 2);
+ 
+ function update() {
+
+   // Make sure to filter the mouse event to D3 through our SVGPan
+   // transformation
+   var p = this.createSVGPoint();
+   p.x = d3.mouse(this)[0];
+   p.y = d3.mouse(this)[1];
+   p = p.matrixTransform(this.getElementById("viewport").getCTM().inverse());
+   vertices[0] = [p.x, p.y];
+
+   g.selectAll("path")
+       .data(d3.geom.voronoi(vertices)
+       .map(function(d) { return "M" + d.join("L") + "Z"; }))
+       .filter(function(d) { return this.getAttribute("d") != d; })
+       .attr("d", function(d) { return d; });
+ }
+  $('svg').svgPan('viewport');
+});
+
+     
+     function r(){     
+        location.reload();
+     }
+     function cposition(){      
+	$('.word').wrap('<g>');       
+        $('svg').svgPan('svg');
+        $('svg').svgPan('viewport');
+
+        x=100+400*Math.random(100);
+	y=100+400*Math.random(100);
+        circle=$('#x1');
+	circle.attr('cx',x).attr('cy',y);
+
+        x=100+400*Math.random(100);
+	y=100+400*Math.random(100);
+        rect=$('#x2');
+	rect.attr('x',x).attr('y',y);
+     }
+     function c2(){
+	svg=d3.select('#svg');
+
+	k=$('.word').length;
+
+        word=[];
+	color=[];
+
+	for (i=0; i<k; i++) {
+          word[i]=Math.ceil(Math.random()*100);
+
+          x=100+Math.ceil(Math.random()*155);
+          sx=x.toString(16);
+
+          switch(i % 2) {
+            case 0:
+	      color[i]='0000'+sx
+	      break;
+            case 1:
+	      color[i]='00'+sx+'00';
+	      break;
+            case 2:
+	      color[i]=sx+'0000';
+              break;
+	  }          
+        }
+
+	var color = d3.scale.category20();
+
+	d3.selectAll('.word')
+	  .data(word)//[4, 8, 15, 16, 23, 42])
+	  .text(function(d){return d})
+	  .attr('x',function(d,i){return d})
+	  .style("font-size",function(d,i) {return (d/10).toString()+"px"});
+          ;
+
+
+	c=d3.selectAll('.circle')
+	  .data(word)//4, 8, 15, 16, 23, 42])
+	  .text(function(d){return d})
+	  .attr('cx',function(d,i){return d})
+	  .attr('cy',function(d,i){return d})
+	  .attr('r',function(d) {return Math.log(d)})
+	  .attr('value',function(d,i) {return word[i];})
+          .attr('class','circles')
+	  .style("fill",function(d,i){return color(i);});
+     }
+
+     function click_the_circle() {
+        v=$(this).attr('cx');        
+        c=$(this).css('fill');
+
+        //d3.select($(this)).attr('r',20);
+
+	$('#span2').html(v+'==>'+c);
+	$('#span2').css('background-color',c);
+     }
+
+     function cc() {
+        //alert('you hint rect');
+     }
+
+     function c(){          	
+	var words=['one','2','3'];	
+        x=20+145*Math.random();
+	y=20+145*Math.random();
+
+        svg=d3.select('#svg');
+        vp=d3.select('#viewport');
+	
+        //c=document.createElement('circle');
+        //c2=c.attr('class','circle').style({fill:'#00f'}).attr('cx',x).attr('cy',y).attr('r',5);
+	//vp.appendChild(c2);
+
+        //vp.select('text').
+	vp.append('circle').attr('class','circle').style({fill:'#00f'}).attr('cx',x).attr('cy',y).attr('r',3);//Math.random()*10);
+	vp.append('text').attr('class','word').attr('x',x).attr('y',y).text(Math.floor(x).toString());//..style("font-size","34px");
+//	vp.appendChild(x);
+//	vp.appendChild(y);
+
+      	$('.circle').click(click_the_circle);	
+
+	d3.selectAll("span").style("color", function() {
+           return "hsl(" + Math.random() * 360 + ",100%,50%)";
+        });
+     }
+  </script>
+</head>
+
+<body>
+  <div id=test></div>
+  <hr>
+    <button id=x onclick='r()'>refresh</button>
+    <button id=x onclick='cposition()'>cposition</button>
+    <button id=x onclick='c()'>button</button>  
+    <button id=x onclick='c2()'>c2</button>  
+  <hr>
+
+  <div id=test2>
+     this is div test
+     <span class='span1' id='span1'>span1</span> 
+     <hr>
+     <span class='span2' id='span2'>span2</span>
+  </div>
+  <hr>
+  <h1>My first SVG</h1>
+  <hr>
+  //<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink">  
+
+  <svg id='svg' xmlns="http://www.w3.org/2000/svg" version="1.1">
+    <g id="viewport">// transform="matrix(0.9240345346828462,0,0,0.9240345346828462,427.4995349244402,399.0884233275848)">
+      <a href='./'><circle id='x1' cy="50" cx="150" r="40" stroke="black" stroke-width="2" fill="red" /></a>
+      <rect id='x2' onclick='cc()' width="300" height="100" y="90" style="fill:rgb(50,220,55);stroke-width:1;stroke:rgb(0,0,0)"/>
+      <text class='word' x=200 y=200 text='text'>123</text>
+    </g>
+  </svg>
+</body>

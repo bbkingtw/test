@@ -1,0 +1,21 @@
+head
+  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script src='http://codeorigin.jquery.com/jquery-2.0.3.min.js'></script>
+  <script src='http://talos.github.com/jquery-svgpan/jquery-svgpan.js'></script>
+
+  script(type='text/javascript').
+    $(function(){      
+      setInterval(function(){
+        $('#time').html(new Date())
+      },1000);
+    });
+body
+  h2
+    li#time start_time
+    li#start=start_time
+    text this is user [#{sID}]
+    br
+    a(href='/test') test
+  form(method='post')
+    input(type='text', name='username')
+    input(type='submit')
